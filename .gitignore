@@ -1,4 +1,9 @@
+dist/
 node_modules/
+frames/
 recordings/
-session.txt
 starter.zip
+session.txt
+serve.log
+capture-log.txt
+video-debug.mjs

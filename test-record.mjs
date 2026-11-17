@@ -36,7 +36,7 @@ await page.waitForSelector('[data-testid="acked"]', { timeout: 15000 });
 console.log('acked visible for', id);
 await page.waitForTimeout(1500);
 
-const videoPath = await page.video.path();
 await ctx.close();
-console.log('video:', videoPath);
 await browser.close();
+const files = fs.readdirSync(outDir).filter((f) => f.endsWith('.webm'));
+console.log('video:', files);
