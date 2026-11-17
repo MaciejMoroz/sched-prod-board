@@ -8,6 +8,7 @@ const buildSha = document.querySelector('[data-testid="build-sha"]');
 
 const acked = new Map(); // id -> ackedAt
 let selectedId = null;
+const rowEls = new Map(); // id -> <li>
 
 function formatTime(iso) {
   const date = new Date(iso);
@@ -20,15 +21,62 @@ function formatTime(iso) {
   return fmt.format(date);
 }
 
-function rowHtml(i) {
+function rowContent(i) {
   const ackedAt = acked.get(i.id);
-  return `<li data-testid="incident-row" data-id="${i.id}" class="row ${i.severity}${ackedAt ? ' acked' : ''}${i.id === selectedId ? ' selected' : ''}" tabindex="0">
-    <span class="id">${i.id}</span>
-    <span class="sev">${i.severity}</span>
-    <span class="what">${i.service} · ${i.region} · ${i.summary}</span>
-    <time datetime="${i.openedAt}">${formatTime(i.openedAt)}</time>
-    ${ackedAt ? `<span data-testid="acked" class="acked-mark">acked ${formatTime(ackedAt)}</span>` : ''}
-  </li>`;
+  return {
+    className: `row ${i.severity}${ackedAt ? ' acked' : ''}${i.id === selectedId ? ' selected' : ''}`,
+    innerHTML: `<span class="id">${i.id}</span>
+        <span class="sev">${i.severity}</span>
+        <span class="what">${i.service} · ${i.region} · ${i.summary}</span>
+        <time datetime="${i.openedAt}">${formatTime(i.openedAt)}</time>
+        ${ackedAt ? `<span data-testid="acked" class="acked-mark">acked ${formatTime(ackedAt)}</span>` : ''}`,
+  };
+}
+
+function rowHtml(i) {
+  const li = document.createElement('li');
+  li.dataset.testid = 'incident-row';
+  li.dataset.id = i.id;
+  li.tabIndex = 0;
+  const { className, innerHTML } = rowContent(i);
+  li.className = className;
+  li.innerHTML = innerHTML;
+  return li;
+}
+
+// Keyed render: new rows are inserted where they belong, existing rows are patched in
+// place, and a row is removed only when its incident is no longer in the answer.
+function render(incidents) {
+  empty.hidden = incidents.length > 0;
+  const seen = new Set();
+  let anchor = list.firstElementChild;
+  for (const i of incidents) {
+    seen.add(i.id);
+    let li = rowEls.get(i.id);
+    if (!li) {
+      li = rowHtml(i);
+      rowEls.set(i.id, li);
+      list.insertBefore(li, anchor);
+      anchor = li;
+      continue;
+    }
+    const want = rowContent(i);
+    if (li.className !== want.className || li.innerHTML !== want.innerHTML) {
+      li.className = want.className;
+      li.innerHTML = want.innerHTML;
+    }
+    if (li.previousElementSibling !== anchor) {
+      list.insertBefore(li, anchor);
+    }
+    anchor = li;
+  }
+  for (const [id, li] of rowEls) {
+    if (!seen.has(id)) {
+      li.remove();
+      rowEls.delete(id);
+    }
+  }
+  renderPanel(incidents);
 }
 
 function panelHtml(i) {
@@ -44,18 +92,6 @@ function panelHtml(i) {
         : `<button data-testid="panel-ack" data-id="${i.id}" class="ack-btn">Ack</button>`
     }
   </aside>`;
-}
-
-function render(incidents) {
-  if (!incidents.length) {
-    list.innerHTML = '';
-    empty.hidden = false;
-    renderPanel(incidents);
-    return;
-  }
-  empty.hidden = true;
-  list.innerHTML = incidents.map(rowHtml).join('');
-  renderPanel(incidents);
 }
 
 function renderPanel(incidents) {
