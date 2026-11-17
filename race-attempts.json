@@ -1,0 +1,30 @@
+{
+  "attempts": [
+    {
+      "intended": "INC-8952",
+      "clickedAt": 2.313
+    },
+    {
+      "intended": "INC-2363",
+      "clickedAt": 5.979
+    },
+    {
+      "intended": "INC-6150",
+      "clickedAt": 9.751
+    }
+  ],
+  "events": [
+    {
+      "got": "INC-8952",
+      "at": 1.938
+    },
+    {
+      "got": "INC-2363",
+      "at": 5.616
+    },
+    {
+      "got": "INC-6150",
+      "at": 9.386
+    }
+  ]
+}

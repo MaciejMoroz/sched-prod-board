@@ -15,3 +15,10 @@ footer { color: #777; font-size: 13px; }
 .ack-btn:disabled { opacity: 0.5; cursor: wait; }
 .acked-mark { color: #0a7d32; font-weight: 600; }
 .row.acked .what { color: #666; }
+.row.selected { outline: 2px solid #0066cc; outline-offset: -2px; }
+.row { cursor: pointer; }
+.panel { max-width: 960px; margin: 16px 0 0; padding: 16px; border: 1px solid #0066cc; border-radius: 8px; background: #fff; }
+.panel h2 { margin: 0 0 8px; font-size: 18px; font-family: ui-monospace, monospace; }
+.panel .sev { font-family: system-ui, sans-serif; font-size: 13px; }
+.panel .sev-sev1 { color: #b00020; }
+.panel .opened { color: #555; }
