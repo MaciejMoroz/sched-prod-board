@@ -65,7 +65,7 @@ function render(incidents) {
       li.className = want.className;
       li.innerHTML = want.innerHTML;
     }
-    if (li.previousElementSibling !== anchor) {
+    if (anchor !== li && li.previousElementSibling !== anchor) {
       list.insertBefore(li, anchor);
     }
     anchor = li;
