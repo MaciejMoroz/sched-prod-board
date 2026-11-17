@@ -49,26 +49,24 @@ function rowHtml(i) {
 function render(incidents) {
   empty.hidden = incidents.length > 0;
   const seen = new Set();
-  let anchor = list.firstElementChild;
+  let ref = list.firstElementChild;
   for (const i of incidents) {
     seen.add(i.id);
     let li = rowEls.get(i.id);
     if (!li) {
       li = rowHtml(i);
       rowEls.set(i.id, li);
-      list.insertBefore(li, anchor);
-      anchor = li;
-      continue;
+    }
+    if (li === ref) {
+      ref = li.nextElementSibling;
+    } else {
+      list.insertBefore(li, ref);
     }
     const want = rowContent(i);
     if (li.className !== want.className || li.innerHTML !== want.innerHTML) {
       li.className = want.className;
       li.innerHTML = want.innerHTML;
     }
-    if (anchor !== li && li.previousElementSibling !== anchor) {
-      list.insertBefore(li, anchor);
-    }
-    anchor = li;
   }
   for (const [id, li] of rowEls) {
     if (!seen.has(id)) {
